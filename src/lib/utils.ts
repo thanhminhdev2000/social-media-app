@@ -6,7 +6,10 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function formatRelativeDate(from: Date) {
+export function formatRelativeDate(from: Date | string) {
+  if (typeof from === "string") {
+    from = new Date(from);
+  }
   const currentDate = new Date();
   if (currentDate.getTime() - from.getTime() < 24 * 60 * 60 * 1000) {
     return formatDistanceToNowStrict(from, { addSuffix: true });
