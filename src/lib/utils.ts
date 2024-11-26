@@ -7,6 +7,9 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatRelativeDate(from: Date) {
+  if (typeof from === "string") {
+    from = new Date(from);
+  }
   const currentDate = new Date();
   if (currentDate.getTime() - from.getTime() < 24 * 60 * 60 * 1000) {
     return formatDistanceToNowStrict(from, { addSuffix: true });

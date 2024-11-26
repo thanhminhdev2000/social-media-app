@@ -1,27 +1,22 @@
 "use client";
 
 import Post from "@/components/posts/Post";
+import axiosInstance from "@/lib/axios";
 import { PostData } from "@/lib/types";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 
 export default function ForYouFeed() {
-  const query = useQuery<PostData[]>({
+  const { data, status } = useQuery<PostData[]>({
     queryKey: ["post-feed", "for-you"],
-    queryFn: async () => {
-      const res = await fetch("/api/posts/for-you");
-      if (!res.ok) {
-        throw Error(`Request failed with status code ${res.status}`);
-      }
-      return res.json();
-    },
+    queryFn: () => axiosInstance.get("/api/posts/for-you"),
   });
 
-  if (query.status === "pending") {
+  if (status === "pending") {
     return <Loader2 className="mx-auto animate-spin" />;
   }
 
-  if (query.status === "error") {
+  if (status === "error") {
     return (
       <p className="text-center text-destructive">
         An error occurred while loading posts.
@@ -30,10 +25,10 @@ export default function ForYouFeed() {
   }
 
   return (
-    <>
-      {query.data.map((post) => (
+    <div className="space-y-5">
+      {data.map((post) => (
         <Post key={post.id} post={post} />
       ))}
-    </>
+    </div>
   );
 }
