@@ -1,19 +1,44 @@
 "use client";
 
+import InfiniteScrollContainer from "@/components/InfiniteScrollContainer";
 import Post from "@/components/posts/Post";
+import PostsLoadingSkeleton from "@/components/posts/PostsLoadingSkeleton";
 import axiosInstance from "@/lib/axios";
-import { PostData } from "@/lib/types";
-import { useQuery } from "@tanstack/react-query";
+import { PostsPage } from "@/lib/types";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 
 export default function ForYouFeed() {
-  const { data, status } = useQuery<PostData[]>({
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetching,
+    isFetchingNextPage,
+    status,
+  } = useInfiniteQuery<PostsPage>({
     queryKey: ["post-feed", "for-you"],
-    queryFn: () => axiosInstance.get("/api/posts/for-you"),
+    queryFn: ({ pageParam }) =>
+      axiosInstance.get(
+        "/api/posts/for-you",
+        pageParam ? { params: { cursor: pageParam } } : {},
+      ),
+    initialPageParam: null as string | null,
+    getNextPageParam: (lastPage) => lastPage.nextCursor,
   });
 
+  const posts = data?.pages.flatMap((page) => page.posts) || [];
+
   if (status === "pending") {
-    return <Loader2 className="mx-auto animate-spin" />;
+    return <PostsLoadingSkeleton />;
+  }
+
+  if (status === "success" && !posts.length && !hasNextPage) {
+    return (
+      <p className="text-center text-muted-foreground">
+        No one has posted anything yet.
+      </p>
+    );
   }
 
   if (status === "error") {
@@ -25,10 +50,14 @@ export default function ForYouFeed() {
   }
 
   return (
-    <div className="space-y-5">
-      {data.map((post) => (
+    <InfiniteScrollContainer
+      className="space-y-5"
+      onBottomReached={() => hasNextPage && !isFetching && fetchNextPage()}
+    >
+      {posts.map((post) => (
         <Post key={post.id} post={post} />
       ))}
-    </div>
+      {isFetchingNextPage && <Loader2 className="mx-auto my-3 animate-spin" />}
+    </InfiniteScrollContainer>
   );
 }
