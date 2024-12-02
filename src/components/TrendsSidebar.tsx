@@ -94,7 +94,7 @@ const getTrendingTopics = unstable_cache(
   },
   ["trending_topics"],
   {
-    revalidate: 3 * 60 * 60,
+    revalidate: 5 * 60,
   },
 );
 
@@ -108,7 +108,11 @@ async function TrendingTopics() {
         const title = hashtag.split("#")[1];
 
         return (
-          <Link key={title} href={`/hashtag/${title}`} className="block">
+          <Link
+            key={title}
+            href={`/hashtag?q=${encodeURIComponent(title)}`}
+            className="block"
+          >
             <p
               className="line-clamp-1 break-all font-semibold hover:underline"
               title={hashtag}

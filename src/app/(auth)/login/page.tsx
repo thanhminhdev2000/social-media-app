@@ -3,7 +3,7 @@ import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import LoginForm from "./LoginForm";
-import GoogleSignInButton from "./GoogleSignInButton";
+import GoogleSignInButton from "./google/GoogleSignInButton";
 
 export const metadata: Metadata = {
   title: "Login",
