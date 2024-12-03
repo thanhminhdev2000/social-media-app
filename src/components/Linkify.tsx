@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { LinkIt, LinkItUrl } from "react-linkify-it";
-// import UserLinkWithTooltip from "./UserLinkWithTooltip";
 
 interface LinkifyProps {
   children: React.ReactNode;
@@ -40,7 +39,7 @@ function LinkifyHashtag({ children }: LinkifyProps) {
       component={(match, key) => (
         <Link
           key={key}
-          href={`/hashtag/${match.slice(1)}`}
+          href={`/hashtag?q=${match.slice(1)}`}
           className="text-primary hover:underline"
         >
           {match}
